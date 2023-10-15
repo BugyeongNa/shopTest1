@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+
+    <div layout:fragment="content" class="m-3 p-3">
+
+        <!-- register -->
+        <div class="row mt-3">
+
+            <div class="col">
+
+                <div class="card">
+                    <h5 class="card-header">Board Register</h5>
+                    <div class="card-body">
+
+                        <h5 class="card-title">Board Register</h5>
+
+                        <!-- board register content -->
+                        <form action="/board/register" method="post">
+                            <div class="input-group mb-3">
+                                <label for="bno" class="input-group-text">Bno</label>
+                                <input type="text" name="bno" th:value="${dto.bno}" readonly class="form-control" id="bno" placeholder="글제목">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="title" class="input-group-text">Title</label>
+                                <input type="text" name="title" th:value="${dto.title}" readonly class="form-control" id="title" placeholder="글제목">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="content" class="input-group-text">Content</label>
+                                <textarea class="form-control" name="content"  readonly  id="content" rows="5">[[${dto.content}]]</textarea>
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="writer" class="input-group-text">Write</label>
+                                <input type="text" name="writer" th:value="${dto.writer}" readonly  class="form-control" id="writer" placeholder="작성자">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="regDate" class="input-group-text">RegDate</label>
+                                <input type="text" name="regDate" th:value="${#temporals.format(dto.regDate,'yyyy-MM-dd')}" readonly  class="form-control" id="regDate" placeholder="등록일">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="modDate" class="input-group-text">ModDate</label>
+                                <input type="text" name="modDate" th:value="${#temporals.format( dto.modDate, 'yyyy-MM-dd')}" readonly  class="form-control" id="modDate" placeholder="수정일">
+                            </div>
+                            <div class="my-4" th:with="user=${#authentication.principal}">
+                                <div class="d-flex justify-content-end" th:with="link=${pageRequestDTO.getLink()}">
+                                    <a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
+                                        <button type="button" class="btn btn-primary">List</button>
+                                    </a>
+                                    <!-- 로그인 상태일 경우만 수정버튼 활성화 -->
+                                    <a  th:if="${user != null && user.username == dto.writer}"
+                                        th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
+                                        <button type="button"  class="btn btn-secondary modify">Modify</button>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+
+
+
+                    </div>
+                </div>
+
+            </div>            
+
+        </div>        
+
+        <!-- 모달창 -->
+        <div></div>
+
+
+        <!-- 댓글 뷰 및 페이지 영역 -->
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="my-4">
+                    <button class="btn btn-info addReplyBtn">ADD REPLY</button>
+                </div>
+                <div>
+                    <ul class="list-group replyList">
+                        <!-- 서버에 요청한 댓글 목록 출력 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <ul class="pagination replyPaging">
+                    <!-- 페이징 출력하는 영역-->
+                </ul>
+        </div>
+        </div>
+
+
+        <!-- 댓글 등록 모달창 레이아웃 -->
+        <div class="modal registerModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register Reply</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span for="replyText" class="input-group-text">Reply Text</span>
+                        <input class="form-control replyText" type="text" id="replyText">
+                    </div>
+                    <!-- 로그인 상태일 경우 username값 설정 -->
+                    <div class="input-group mb-3" th:with="user=${#authentication.principal}">
+                        <span for="replyer" class="input-group-text">Replyer</span>
+                        <input th:value="${user.username}" readonly
+                                class="form-control replyer" type="text" id="replyer">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark closeRegisterBtn" >Close</button>
+                    <button type="button" class="btn btn-primary registerBtn">Register</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- 댓글 조회/수정/삭제 모달창 레이아웃 -->
+        <div class="modal modifyModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header  replyHeader">
+                    <h5 class="modal-title">Reply Text</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span for="replyText" class="input-group-text">Reply Text</span>
+                        <input class="form-control modifyText" type="text" id="replyText">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary modifyBtn">Modify</button>
+                    <button type="button" class="btn btn-primary removeBtn">Remove</button>
+                    <button type="button" class="btn btn-outline-dark closeModifyBtn" >Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 댓글:ajax처리(비동기 호출 처리 하는 자바스크립트)-->
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script th:src="@{/js/reply.js}"></script>
+    </div>
+
+
+
+    <script layout:fragment="script"    th:inline="javascript">
+        // 로그인 상태 정보 저장
+        const currentUser = [[${#authentication.principal.username}]]
+        // 로그인 상태 체크(댓글 작성자와 currentUser(로그인)일치 여부)
+        let hasAuth = false
+
+
+        // 게시글 번호를 javascript변수에 저장
+        const bno = [[${dto.bno}]]
+
+        const replyList = document.querySelector('.replyList')// 댓글 dom
+        const replyPaging = document.querySelector('.replyPaging')// 댓글 페이징 dom
+
+        // 모달창 안에 있는 버튼
+        const addReplyBtn = document.querySelector('.addReplyBtn');// Add Reply버튼
+        const closeRegisterBtn = document.querySelector('.closeRegisterBtn')// Close Reply 버튼
+        const registerBtn = document.querySelector('.registerBtn')// Register Reply 버튼
+
+
+        const modifyBtn = document.querySelector('.modifyBtn');// Modify Reply버튼
+        const closeModifyBtn = document.querySelector('.closeModifyBtn')// Close Reply 버튼
+        const removeBtn = document.querySelector('.removeBtn')// Remove Reply 버튼
+
+        // 모달창 안에 있는 content
+        const replyText = document.querySelector('.replyText')// 댓글 내용
+        const replyer = document.querySelector('.replyer')// 댓글 작성자
+
+        const modifyText = document.querySelector('.modifyText')// 댓글 수정내용
+        const replyHeader = document.querySelector('.replyHeader')// 모달창 Header
+
+
+        // -------------------------------------------- //
+        // 댓글 내용 출력양식 생성하는 함수 선언
+        function printList(dtoList){
+            let str ='';
+            if (dtoList && dtoList.length>0){
+                for ( const dto of dtoList){
+                    str += `
+                    <li class="list-group-item  replyItem">
+                        <div class="row">
+                            <div class="col-md-2">${dto.rno}</div>
+                            <div class="col-md-6 repyText-hover" data-rno="${dto.rno}">${dto.replyText}</div>
+                            <div class="col-md-2">${dto.replyer}</div>
+                            <div class="col-md-2">${dto.regDate}</div>
+                        </div>
+                    </li>
+                    `
+                }// end for
+            }// end if
+            replyList.innerHTML = str;
+        }
+        // 페이지 목록(번호) 생성
+        function printPages(data){
+            // pagination
+            let pageStr = ''
+
+            // 이전 버튼 표시여부
+            if (data.prev){
+                pageStr +=`
+                    <li class="page-item">
+                        <a class="page-link" data-page="${data.start-1}">PREV</a>
+                    </li>`
+            }
+
+            // 특정블럭에 해당되는 페이지번호 범위 출력
+            for(let i=data.start; i<=data.end; i++){
+                console.log("i="+i, "data.page="+data.page)
+                if (i==data.page) {
+                    pageStr +=`
+                        <li class="page-item active">
+                            <span class="page-link" data-page="${i}">${i}</span>
+                        </li>`
+                } else {
+                    pageStr +=`
+                        <li class="page-item ">
+                            <a class="page-link" data-page="${i}">${i}</a>
+                        </li>`
+                }
+
+            }
+
+            //다음 버튼 표시 여부
+            if (data.next){
+                pageStr +=`
+                    <li class="page-item">
+                        <a class="page-link" data-page="${data.end+1}">NEXT</a>
+                    </li>`
+            }
+
+            replyPaging.innerHTML = pageStr;
+        }
+        //비동기처리를 한위 함수 선언 및 호출
+        function printReplies(page, size, goLast){
+
+            // data 요청:비동기처리방식
+            getList({bno, page, size}).then(data=>{
+                
+
+                if (goLast){
+                    //console.log("마지막페이지 호출하기위한 부분")
+
+                    let total = data.totoal;
+                    let lastPage = parseInt(Math.ceil(total/size)) 
+                    //console.log(data.totoal, total, "마지막페이지번호:"+lastPage)
+
+                    // 마지막 페이지번호로 재요청
+                    getList({bno:bno, page:lastPage, size:size}).then(data=>{
+                        console.log(data)
+                        printList(data.dtoList)// 댓글 목록
+                        printPages(data)// 댓글 페이지
+                    }).catch(e=>{console.error(e)});
+                    
+                } else {
+                    printList(data.dtoList)// 댓글 목록
+                    printPages(data)// 댓글 페이지
+                }
+
+            }).catch(e=>{
+                console.error(e)
+            });
+        }
+        printReplies(1,10,true)
+        // -------------------------------------------- //
+
+        // 이벤트 처리 //
+        const registerModal = new bootstrap.Modal('.registerModal')// 모달창(등록)
+        const modifyModal = new bootstrap.Modal('.modifyModal')// 모달창(조회/수정/삭제)
+       
+        addReplyBtn.addEventListener('click', function(){
+            console.log("Add Reply button...")
+
+            // 모달창 => 댓글 등록 작업
+            registerModal.show()
+
+        }, false);
+        closeRegisterBtn.addEventListener('click',function(){
+            registerModal.hide()
+        }, false)
+
+        // 댓글 등록 처리하는 이벤트 핸들러
+        registerBtn.addEventListener('click',function(){
+            //console.log('댓글 등록 처리하기')
+            //alert(replyText.value+","+replyer.value)
+
+            // 전송할 데이터를 javascript 객체 생성(JSON)
+            const replyObj = {
+                bno:bno,
+                replyText: replyText.value,
+                replyer: replyer.value
+            }
+
+            // 비동기방식으로 요청
+            addReply(replyObj).then(result=>{
+                // console.log(registerBtn)
+                // alert(`${result.rno}번 댓글 정상 등록`)
+
+                registerModal.hide()// 모달창 닫기
+                replyText.value = ''
+                replyer.value = ''
+
+                // 갱신(추가/삭제/수정)된 댓글 목록 요청
+                printReplies(1,10,true)
+
+            }).catch(e=>alert('Exception...'))
+
+        }, false)
+
+        // 페이징 처리하기
+        let page = 1;
+        let size = 10;
+        replyPaging.addEventListener('click',function(e){
+            e.preventDefault()
+            e.stopPropagation()
+
+            const target = e.target;// 실제 클릭동작발생한 객체
+
+            console.log(target.tagName);
+            if (!target || target.tagName != 'A'){
+                //'<a>'태그가 아닌 다른 태그에서 클릭했을 때 종료
+                //alert(target.tagName)
+                return
+            }
+            
+            //alert(target.tagName);
+            // '<a>'태그에 클릭했을 때만 처리
+            const pageNum = target.getAttribute("data-page")
+            page = pageNum
+            
+            // 해당 페이지 요청
+            printReplies(page, size)
+        })
+
+        // 댓글 List항목 클릭 이벤트 처리
+        replyList.addEventListener('click',function(e){
+            e.preventDefault()
+            e.stopPropagation()
+
+
+            const target = e.target
+
+            if (!target || target.tagName != 'DIV'){
+                ///alert(target.tagName)
+                return
+            }
+
+            const rno = target.getAttribute("data-rno")
+            if (!rno) return
+
+            // 비동기방식으로 특정 댓글번호 요청
+            getReply(rno).then(reply=>{
+                console.log(reply)
+
+                replyHeader.innerHTML = reply.rno
+                modifyText.value = reply.replyText
+
+                // 댓글 내용 모달창 띄우기
+                modifyModal.show()
+
+                // 로그인 username과 댓글 작성자 동일 여부체크
+                hasAuth = currentUser === reply.replyer
+
+            }).catch(e=>alert('error'))
+
+
+        })
+        // 수정 모달창 닫기
+        closeModifyBtn.addEventListener('click',function(){
+            modifyModal.hide()
+        })
+        // 댓글 삭제 작업
+        removeBtn.addEventListener('click',function(){
+            //alert('remove...')
+            if (!hasAuth) {
+                alert("댓글 작성자만 삭제 가능합니다.")
+                modifyModal.hide()
+                return;
+            }
+
+            const rno = replyHeader.innerHTML
+
+            removeReply(rno).then(result =>{
+                alert(result.rno+"번 댓글이 삭제되었습니다.")
+
+                modifyText.value = ''
+                modifyModal.hide()
+
+                // 갱신(추가/삭제/수정)된 댓글 목록 요청
+                printReplies(1,10,true)
+
+            }).catch(e=>console.log(e))
+
+
+
+        })
+        // 댓글 수정 작업
+        modifyBtn.addEventListener('click',function(){
+            //alert('modify...')
+
+            // 로그인 상태 유저와 댓글 작성자 동일 여부 체크
+            if (!hasAuth) {
+                alert("댓글 작성자만 수정이 가능합니다.")
+                modifyModal.hide()
+                return;
+            }
+
+            // 태그요소의 값을 json객체에 저장
+            const replyObj = {
+                bno: bno,
+                rno: replyHeader.innerHTML,
+                replyText: modifyText.value
+            }
+            // 비동기방식으로 수정된 내용 요청
+            modifyReply(replyObj).then(result=>{
+                // 정상적인 수정작업되었을 처리하는 메서드
+                alert(result.rno+"번 댓글이 수정되었습니다.")
+
+                modifyText.value = ''
+                modifyModal.hide()
+
+                // 갱신(추가/삭제/수정)된 댓글 목록 요청
+                printReplies(1,10,true)
+
+
+            }).catch(e=>console.log(e))
+
+        })
+
+
+
+        
+    </script>
+
+    <style  layout:fragment="css"       th:inline="css">
+        .modify {
+            margin-left: 0.2em;
+        }
+        .replyPaging a {
+            cursor: pointer;
+        }
+        .replyList .repyText-hover:hover {
+            color: #198754;
+            cursor: pointer;
+        }
+    </style>
+</html>

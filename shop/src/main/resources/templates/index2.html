@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/shoplayout}">
+
+    <div layout:fragment="content" class="m-2 p-2 container  border border-1">
+        <!-- 해당 페이지 콘텐츠 영역 작성 -->
+        <h1 class="text-center">서브 페이지 콘텐츠</h1>
+        <hr>
+        <div>
+            <button type="button" class="btn btn-danger testBtn">Danger</button>
+        </div>
+
+
+
+    </div>
+
+
+    <script  layout:fragment="script" th:inline="javascript">
+    /* // 자바스크립튼 작성 영역
+        console.log("index.html javascript!!!")
+        $(function(){
+            console.log('jQuery OK...')
+
+            $(".testBtn").click(function(){
+                console.log('click')
+                $('.modal').modal('show')
+            })
+        })
+        */
+    </script>
+    <style  layout:fragment="css" th:inline="css">
+        /* 스타일 작성 영역
+        .main_content {
+            border: 1px solid red;
+        }
+        */
+    </style>
+</html>

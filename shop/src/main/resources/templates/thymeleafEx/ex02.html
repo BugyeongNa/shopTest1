@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 >상품 데이터 출력 테스트</h1>
+    <hr>
+    <div>상품명: <span th:text="${itemDto.itemNm}">1</span></div>
+    <div>상품상세설명: <span th:text="${itemDto.itemDetail}">2</span></div>
+    <div>상품등록일: <span th:text="${itemDto.regTime}">3</span></div>
+    <div>상품가격: <span th:text="${itemDto.price}">4</span></div>
+    <hr>
+
+    <div th:object="${itemDto}">
+    <div>상품명: <span th:text="*{itemNm}">1</span></div>
+    <div>상품상세설명: <span th:text="*{itemDetail}">2</span></div>
+    <div>상품등록일: <span th:text="*{regTime}">3</span></div>
+    <div>상품가격: <span th:text="*{price}">4</span></div>
+    </div>
+
+</body>
+</html>

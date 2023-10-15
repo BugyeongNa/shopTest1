@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/shoplayout}">
+
+    <div layout:fragment="content" class="m-2 p-2 container  border border-1">
+        <!-- 해당 페이지 콘텐츠 영역 작성 -->
+        <h1 class="text-center">메인 페이지</h1>
+        <hr>
+        <div>
+            <button type="button" class="btn btn-danger testBtn">Danger</button>
+        </div>
+
+
+
+        <!-- 모달창 영역 테스트-->
+        <!--
+        <div class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Modal body text goes here.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+
+
+    </div>
+
+
+    <script  layout:fragment="script" th:inline="javascript">
+    /* // 자바스크립튼 작성 영역
+        console.log("index.html javascript!!!")
+        $(function(){
+            console.log('jQuery OK...')
+
+            $(".testBtn").click(function(){
+                console.log('click')
+                $('.modal').modal('show')
+            })
+        })
+        */
+    </script>
+    <style  layout:fragment="css" th:inline="css">
+        /* 스타일 작성 영역
+        .main_content {
+            border: 1px solid red;
+        }
+        */
+    </style>
+</html>

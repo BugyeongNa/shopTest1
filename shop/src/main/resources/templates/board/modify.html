@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+
+    <div layout:fragment="content" class="m-3 p-3">
+
+        <!-- board modify -->
+        <div class="row mt-3">
+
+            <div class="col">
+
+                <div class="card">
+                    <h5 class="card-header">Board Modify</h5>
+                    <div class="card-body">
+
+                        <h5 class="card-title">Board Modify</h5>
+
+                        <!-- board register content -->
+                        <form  th:action="@{/board/modify}" method="post" id="modifyForm">
+                            <div class="input-group mb-3">
+                                <label for="bno" class="input-group-text">Bno</label>
+                                <input type="text" name="bno" th:value="${dto.bno}" readonly class="form-control" id="bno" placeholder="글제목">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="title" class="input-group-text">Title</label>
+                                <input type="text" name="title" th:value="${dto.title}"  class="form-control" id="title" placeholder="글제목">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="content" class="input-group-text">Content</label>
+                                <textarea class="form-control" name="content"   id="content" rows="5">[[${dto.content}]]</textarea>
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="writer" class="input-group-text">Write</label>
+                                <input type="text" name="writer" th:value="${dto.writer}" readonly  class="form-control" id="writer" placeholder="작성자">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="regDate" class="input-group-text">RegDate</label>
+                                <span id="regDate"   class="form-control">[[${#temporals.format(dto.modDate, 'yyyy-MM-dd')}]]</span>
+<!--                                <input type="text" name="regDate" th:value="${dto.regDate}" readonly  class="form-control" id="regDate" placeholder="등록일">-->
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="modDate" class="input-group-text">Write</label>
+                                <span id="modDate"   class="form-control">[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</span>
+<!--                                <input type="text" name="modDate" th:value="${dto.regDate}" readonly  class="form-control" id="modDate" placeholder="수정일">-->
+                            </div>
+                            <div class="my-4">
+                                <div class="d-flex justify-content-end btns">
+                                    <button type="button" class="btn btn-primary listBtn">List</button>
+                                    <button type="button" class="btn btn-secondary modBtn">Modify</button>
+                                    <button type="button" class="btn btn-danger removeBtn">Remove</button>
+                                </div>
+
+                            </div>
+                        </form>
+
+
+
+                    </div>
+                </div>
+
+            </div>            
+
+        </div>        
+
+        <!-- 모달창 -->
+        <div></div>
+
+    </div>
+
+
+
+
+    <script layout:fragment="script"    th:inline="javascript">
+        const errors = [[${errors}]]
+        const detail = [[${detail}]]
+        console.log(errors)
+
+        let errorMsg = ''
+        if (errors) {
+            for (let i=0; i<errors.length; i++){
+                errorMsg += `${errors[i].field}은(는) ${errors[i]} \n`
+                console.log(errorMsg)
+            }
+            history.replaceState({},null,null)
+            alert(errorMsg)
+        }
+        
+        const link = [[${pageRequestDTO.getLink()}]]
+        const formObj = document.querySelector('#modifyForm')
+
+
+        document.querySelector('.modBtn').addEventListener('click', function(e){
+            e.preventDefault()
+            e.stopPropagation()
+
+            console.log(formObj.title.value, formObj.content.value)
+
+            formObj.action = `/board/modify?${link}`
+            formObj.method = 'post'
+            formObj.submit()
+        },false)
+
+        document.querySelector('.removeBtn').addEventListener('click', function(e){
+            e.preventDefault()
+            e.stopPropagation()
+
+            formObj.action = `/board/remove`
+            formObj.method = 'post'
+            formObj.submit()
+            
+        },false)
+
+        document.querySelector('.listBtn').addEventListener('click', function(e){
+            e.preventDefault()
+            e.stopPropagation()
+
+            formObj.reset()
+            self.location =`/board/list?${link}`
+            
+        },false)        
+
+
+
+        
+    </script>
+    <style  layout:fragment="css"       th:inline="css">
+        .btns > button {
+            margin-left: 0.2em;
+        }
+    </style>
+</html>

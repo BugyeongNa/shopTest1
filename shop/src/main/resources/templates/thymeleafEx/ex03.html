@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}" 
+        rel="stylesheet" 
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" 
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js}" 
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" 
+        crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 >상품 리스트 출력 테스트</h1>
+        <hr>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">순번</th>
+                <th scope="col">상품명</th>
+                <th scope="col">상품설명</th>
+                <th scope="col">가격</th>
+                <th scope="col">상품등록일</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="itemDto , status: ${itemDtoList}">
+                <div th:object="${itemDto}">
+                <th scope="row" th:text="${status.index}">1</th>
+                    <td th:text="*{itemNm}">Mark</td>
+                    <td th:text="*{itemDetail}">Otto</td>
+                    <td th:text="|${#numbers.formatInteger(itemDto.price, 0, 'COMMA')}원|">@mdo</td>
+                    <td th:text="${#temporals.format(itemDto.regTime, 'yyyy-MM-dd')}">@mdo</td>
+                    <!--<td th:text="*{regTime}">@mdo</td>-->
+                    <!--<td th:text="*{price}">@mdo</td>-->
+                    <!--
+                    <td th:text="${itemDto.itemNm}">Mark</td>
+                    <td th:text="${itemDto.itemDetail}">Otto</td>
+                    <td th:text="${itemDto.price}">@mdo</td>
+                    <td th:text="${itemDto.regTime}">@mdo</td>
+                    -->
+                  </div>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    
+
+
+</body>
+</html>

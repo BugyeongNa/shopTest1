@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+
+    <div layout:fragment="content" class="m-3 p-3">
+
+        <!-- register -->
+        <div class="row mt-3">
+
+            <div class="col">
+
+                <div class="card">
+                    <h5 class="card-header">Board Register</h5>
+                    <div class="card-body">
+
+                        <h5 class="card-title">Board Register</h5>
+
+                        <!-- board register content -->
+                        <form action="/board/register" method="post">
+                            <div class="input-group mb-3">
+                                <label for="title" class="input-group-text">Title</label>
+                                <input type="text" name="title" class="form-control" id="title" placeholder="글제목">
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="content" class="input-group-text">Content</label>
+                                <textarea class="form-control" name="content" id="content" rows="5"></textarea>
+                            </div>
+                            <div class="input-group mb-3">
+                                <label for="writer" class="input-group-text">Write</label>
+                                <input type="text" name="writer" th:value="${#authentication.principal.username}" readonly
+                                       class="form-control" id="writer" placeholder="작성자">
+                            </div>
+                            <div class="my-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="reset"  class="btn btn-secondary reset">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+
+
+
+                    </div>
+                </div>
+
+            </div>            
+
+        </div>
+
+        <!-- 모달창 -->
+        <div></div>
+
+    </div>
+
+
+
+
+    <script layout:fragment="script"    th:inline="javascript">
+       const errors = [[${errors}]]
+       console.log(errors)
+
+       let errorMsg = ''
+
+       if (errors) {
+            for (let i=0; i<errors.length; i++){
+                errorMsg += `${errors[i].field}은(는) ${errors[i]} \n`
+            }
+       }
+       //alert(errorMsg)
+
+    </script>
+    <style  layout:fragment="css"       th:inline="css">
+        .reset {
+            margin-left: 0.2em;
+        }
+    </style>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+
+    <div layout:fragment="content" class="m-3 p-3">
+
+        <!-- register -->
+        <div class="row mt-3  px-2">
+            <div class="col">
+                <div class="card">
+                    <h5 class="card-header py-3">상품 등록</h5>
+                    <div class="card-body">
+                        <!-- Item register content -->
+                        <form action="" method="post" enctype="multipart/form-data"
+                              th:object="${itemFormDTO}" >
+
+                            <input type="hidden" th:field="*{id}">
+
+                            <div class="input-group mt-3  ">
+                                <select class="form-select" th:field="*{itemSellStatus}" aria-label="Default select ">
+                                    <option value="SELL">판매중</option>
+                                    <option value="SOLD_OUT">품절</option>
+                                </select>
+                            </div>
+
+                            <!-- 상품명 -->
+                            <div class="input-group mt-3  ">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">상품명</span>
+                                </div>
+                                <input type="text"  class="form-control" id="itemNm" placeholder="상품명을 입력해주세요"
+                                       th:field="*{itemNm}" >
+                            </div>
+                            <p th:if="${#fields.hasErrors('itemNm')}" th:errors="#{itemNm}" class="error"></p>
+                            <!-- 가격 -->
+                            <div class="input-group mt-3  ">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">가격</span>
+                                </div>
+                                <input type="text"  class="form-control" id="price" placeholder="상품의 가격을 입력해주세요"
+                                       th:field="*{price}" >
+                            </div>
+                            <p th:if="${#fields.hasErrors('price')}" th:errors="#{price}" class="error"></p>
+
+                            <!-- 재고 -->
+                            <div class="input-group mt-3  ">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">재고</span>
+                                </div>
+                                <input type="text"  class="form-control" id="stockNumber" placeholder="상품명을 입력해주세요"
+                                       th:field="*{stockNumber}" >
+                            </div>
+                            <p th:if="${#fields.hasErrors('stockNumber')}" th:errors="#{stockNumber}" class="error"></p>
+
+                            <!-- 상품 상세 내용 -->
+                            <div class="input-group mt-3  ">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">상품 상세 내용</span>
+                                </div>
+                                <textarea type="text"  class="form-control" id="itemDetail" rows="10"
+                                          th:field="*{itemDetail}" ></textarea>
+                            </div>
+                            <p th:if="${#fields.hasErrors('itemDetail')}" th:errors="#{itemDetail}" class="error"></p>
+
+                            <!-- 상품 등록시 적용하는 상품이미지 등록 -->
+                            <div th:if="${#lists.isEmpty(itemFormDTO.itemImgDTOList)}">
+                                <div class="form-group" th:each="num: ${#numbers.sequence(1,2)}">
+                                    <div class="mb-3 img-div">
+                                        <label for="itemImgFile" class="form-label" th:text="상품이미지+${num}"></label>
+                                        <input class="form-control" type="file" name="itemImgFile" id="itemImgFile">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 상품 수정시 적용하는 상품이미지 -->
+                            <div th:if="${not #lists.isEmpty(itemFormDTO.itemImgDTOList)}">
+                                <div class="form-group" th:each="itemImgDTO, status: ${itemFormDTO.itemImgDTOList}">
+                                    <div class="mb-3 img-div">
+
+                                        <input class="form-control" type="file" name="itemImgFile" id="itemImgFile2">
+                                        <!-- 상품 수정시 어떤 이미지가 수정되었는지 체크하기위해 상품이미지 아이디값을 설정 -->
+                                        <input type="hidden" name="itemImgIds" th:value="${itemImgDTO.id}">
+                                        <label th:text="${not #strings.isEmpty(itemImgDTO.oriImgName)} ? ${itemImgDTO.oriImgName} : '상품이미지'+${status.index+1} "
+                                               class="form-label"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 상품정보 저장 버튼 -->
+                            <div th:if="${#strings.isEmpty(itemFormDTO.id)}" class="text-center my-2">
+                                <button th:formaction="@{/admin/item/new}" type="submit" class="btn btn-primary">저장</button>
+                            </div>
+                            <!-- 상품정보 수정 버튼 -->
+                            <div th:unless="${#strings.isEmpty(itemFormDTO.id)}" class="text-center my-2">
+                                <button th:formaction="@{'/admin/item/'+${itemFormDTO.id} }" type="submit" class="btn btn-primary">수정</button>
+                            </div>
+
+
+                            <!--스프링 시큐리티에서는 GET방식을 제외한 POST/PUT/DELETE요청에 CSRF요청-->
+                            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+
+
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모달창 -->
+        <div></div>
+
+    </div>
+
+
+
+
+    <script layout:fragment="script"    th:inline="javascript">
+
+        // 서버로부터 에러 메시지가 전달 받았을 경우 alert()호출 하는 부분
+        var errorMessage = [[${errorMessage}]];
+        if(errorMessage != null){
+            alert(errorMessage);
+        }
+
+    </script>
+    <style  layout:fragment="css"       th:inline="css">
+        .reset {
+            margin-left: 0.2em;
+        }
+        .error {
+            color: #bd2130;
+            font-size: 0.8em;
+        }
+    </style>
+</html>
+
+<!-- Cross-Site Request Forgery(크로스 사이트 간 요청 위조)
+    : 사용자가 자신도 모르게 요청을 전송하게 하는 공격 방식
+    스프링 시큐리티에서는 GET방식을 제외한 POST/PUT/DELETE요청에 CSRF요청
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+-->
